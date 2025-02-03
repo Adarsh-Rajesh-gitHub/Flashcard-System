@@ -1,0 +1,117 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General Instructions</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>General Instructions</h1>
+    </header>
+    <main>
+        <div class="content-container">
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <h2>Adding Flashcards</h2>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ul class="instruction-list">
+                            <li>Click the "Add/Edit Flashcards" button on the Flashcard Sets page</li>
+                            <li>Fill in the required fields:
+                                <ul>
+                                    <li>Subject: The main category or course</li>
+                                    <li>Topic: Specific subject matter or chapter</li>
+                                    <li>Front: The question or prompt</li>
+                                    <li>Back: The answer or explanation</li>
+                                    <li>Priority: Set importance level (High/Medium/Low)</li>
+                                </ul>
+                            </li>
+                            <li>Click "Save Flashcard" to store your new card</li>
+                            <li>Your flashcard will be automatically saved and available offline</li>
+                        </ul>
+                    </div>
+                </div>
+    
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <h2>Editing Flashcards</h2>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ul class="instruction-list">
+                            <li>Navigate to the Flashcard Sets page</li>
+                            <li>Find the flashcard you want to edit</li>
+                            <li>Click the "Edit" button on the flashcard</li>
+                            <li>Modify any of the fields as needed</li>
+                            <li>Save your changes using the "Update" button</li>
+                            <li>To delete a flashcard, use the "Delete" button and confirm your choice</li>
+                        </ul>
+                    </div>
+                </div>
+    
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <h2>Filtering Flashcards</h2>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ul class="instruction-list">
+                            <li>Use the filter options at the top of the Flashcard Sets page</li>
+                            <li>Filter by:
+                                <ul>
+                                    <li>Subject: View cards from specific courses</li>
+                                    <li>Priority: Focus on High, Medium, or Low priority cards</li>
+                                    <li>Topic: Find cards within specific chapters or themes</li>
+                                </ul>
+                            </li>
+                            <li>Combine multiple filters for more specific results</li>
+                            <li>Clear filters using the "Reset" button</li>
+                        </ul>
+                    </div>
+                </div>
+    
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <h2>Navigating Flashcards</h2>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <ul class="instruction-list">
+                            <li>Use the navigation bar to move between different sections:
+                                <ul>
+                                    <li>Home: Return to the main menu</li>
+                                    <li>Flashcard Sets: View and manage all your cards</li>
+                                    <li>Add/Edit: Create or modify flashcards</li>
+                                    <li>General: Access these instructions</li>
+                                </ul>
+                            </li>
+                            <li>Click on any flashcard to view its full content</li>
+                            <li>Use the back button to return to previous pages</li>
+                            <li>All changes are automatically saved locally</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <a href="index.html"><button>Home</button></a>
+            </div>
+        </div>
+    </main>
+    <script>
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                header.classList.toggle('active');
+                content.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
