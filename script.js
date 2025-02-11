@@ -62,7 +62,62 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Function to render flashcards (on flashcard-sets.html)
+  // ----- SORTING HELPERS -----
+  // 1) Binary Search-based insertion for alphabetical sorting (by subject).
+  function insertAlphabetically(sortedArray, flashcard) {
+    let left = 0;
+    let right = sortedArray.length - 1;
+    const currentSubject = flashcard.subject.toLowerCase(); 
+
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+      const midSubject = sortedArray[mid].subject.toLowerCase();
+
+      if (currentSubject < midSubject) {
+        right = mid - 1;
+      } else {
+        left = mid + 1;
+      }
+    }
+    // 'left' is now the correct insertion index
+    sortedArray.splice(left, 0, flashcard);
+  }
+
+  function sortAlphabetically(flashcards) {
+    const sorted = [];
+    for (let card of flashcards) {
+      insertAlphabetically(sorted, card);
+    }
+    return sorted;
+  }
+
+  // 2) Sort by priority: High → Medium → Low
+  function sortByPriority(flashcards) {
+    const priorityOrder = { High: 1, Medium: 2, Low: 3 };
+    // Simple comparison sort using built-in .sort()
+    return flashcards.sort((a, b) => {
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
+  }
+
+  // Called by the "Sort" button on flashcard-sets.html
+  window.applySort = function() {
+    const sortCriteria = document.getElementById('sortCriteria').value;
+    const flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+
+    if (sortCriteria === 'alphabetical') {
+      const sorted = sortAlphabetically(flashcards);
+      localStorage.setItem('flashcards', JSON.stringify(sorted));
+    } else if (sortCriteria === 'priority') {
+      const sorted = sortByPriority(flashcards);
+      localStorage.setItem('flashcards', JSON.stringify(sorted));
+    }
+
+    // Re-render after sorting
+    renderFlashcards();
+  };
+
+  // ----- RENDER / FLIP / EDIT / DELETE -----
   function renderFlashcards() {
     const flashcardsDiv = document.getElementById('flashcards');
     if (flashcardsDiv) {
@@ -129,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Edit functionality
   window.editFlashcard = function(index) {
     localStorage.setItem('editFlashcardIndex', index);
-    // Navigate to add/edit page
     window.location.href = 'addflashcards.html';
   };
 

@@ -16,6 +16,17 @@
                <a href="addflashcards.html"><button>Add Flashcards</button></a>
                <a href="index.html"><button>Home</button></a>
            </div>
+
+           <!-- New sorting UI: dropdown + button -->
+           <div class="sort-container">
+               <select id="sortCriteria">
+                   <option value="">Sort by...</option>
+                   <option value="alphabetical">Alphabetically (Subject)</option>
+                   <option value="priority">Priority</option>
+               </select>
+               <button onclick="applySort()">Sort</button>
+           </div>
+
            <div id="flashcards">
                <!-- Flashcards will be dynamically added here -->
            </div>
