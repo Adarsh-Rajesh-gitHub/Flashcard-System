@@ -8,16 +8,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
     const flashcardToEdit = flashcards[editIndex];
     
-    // Populate form with existing flashcard data
-    document.getElementById('subject').value = flashcardToEdit.subject;
-    document.getElementById('topic').value = flashcardToEdit.topic;
-    document.getElementById('priority').value = flashcardToEdit.priority;
+    // Populate form with existing flashcard data, if form is present
+    if (form && flashcardToEdit) {
+      document.getElementById('subject').value = flashcardToEdit.subject || '';
+      document.getElementById('topic').value = flashcardToEdit.topic || '';
+      document.getElementById('priority').value = flashcardToEdit.priority || '';
+      document.getElementById('front').value = flashcardToEdit.front || '';
+      document.getElementById('back').value = flashcardToEdit.back || '';
+      
+      // Change form submit button text
+      const submitButton = form.querySelector('button[type="submit"]');
+      if (submitButton) {
+        submitButton.textContent = 'Update Flashcard';
+      }
+    }
     
-    // Change form submit button text
-    const submitButton = form.querySelector('button[type="submit"]');
-    submitButton.textContent = 'Update Flashcard';
-    
-    // Remove the edit index from localStorage
+    // Remove the edit index from localStorage so we don't keep editing
     localStorage.removeItem('editFlashcardIndex');
   }
   
@@ -27,19 +33,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const subject = document.getElementById('subject').value;
       const topic = document.getElementById('topic').value;
       const priority = document.getElementById('priority').value;
+      const front = document.getElementById('front').value;
+      const back = document.getElementById('back').value;
       
       const flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
       
       // Check if we're updating an existing flashcard
-      const editIndex = localStorage.getItem('editFlashcardIndex');
+      const editIndexInForm = localStorage.getItem('editFlashcardIndex');
       
-      if (editIndex !== null) {
+      if (editIndexInForm !== null) {
         // Update existing flashcard
-        flashcards[editIndex] = { subject, topic, priority };
+        flashcards[editIndexInForm] = { subject, topic, priority, front, back };
         localStorage.removeItem('editFlashcardIndex');
+      } else if (editIndex !== null) {
+        // We had an editIndex from earlier on load
+        flashcards[editIndex] = { subject, topic, priority, front, back };
       } else {
         // Add new flashcard
-        flashcards.push({ subject, topic, priority });
+        flashcards.push({ subject, topic, priority, front, back });
       }
       
       localStorage.setItem('flashcards', JSON.stringify(flashcards));
@@ -51,29 +62,60 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Function to render flashcards (on flashcard-sets.html)
   function renderFlashcards() {
     const flashcardsDiv = document.getElementById('flashcards');
     if (flashcardsDiv) {
       const flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+      
       flashcardsDiv.innerHTML = flashcards
-        .map(
-          (flashcard, index) => `
-          <div class="flashcard">
-            <h3>${flashcard.subject}</h3>
-            <p>Topic: ${flashcard.topic}</p>
-            <p>Priority: ${flashcard.priority}</p>
-            <div class="flashcard-actions">
-              <button onclick="editFlashcard(${index})">Edit</button>
-              <button onclick="deleteFlashcard(${index})">Delete</button>
+        .map((flashcard, index) => {
+          return `
+            <div class="flashcard" id="flashcard-${index}">
+              <!-- Front / Back content toggles on Flip -->
+              <div class="flashcard-content front" style="display: block;">
+                <h3>${flashcard.front || 'No Front Text'}</h3>
+              </div>
+              <div class="flashcard-content back" style="display: none;">
+                <h3>${flashcard.back || 'No Back Text'}</h3>
+              </div>
+              
+              <!-- Additional info below -->
+              <p><strong>Subject:</strong> ${flashcard.subject}</p>
+              <p><strong>Topic:</strong> ${flashcard.topic}</p>
+              <p><strong>Priority:</strong> ${flashcard.priority}</p>
+              
+              <div class="flashcard-actions">
+                <button onclick="flipFlashcard(${index})">Flip</button>
+                <button onclick="editFlashcard(${index})">Edit</button>
+                <button onclick="deleteFlashcard(${index})">Delete</button>
+              </div>
             </div>
-          </div>
-        `
-        )
+          `;
+        })
         .join('');
     }
   }
 
-  // Add delete functionality
+  // Flip functionality
+  window.flipFlashcard = function(index) {
+    const flashcardEl = document.getElementById(`flashcard-${index}`);
+    if (!flashcardEl) return;
+    
+    const frontEl = flashcardEl.querySelector('.front');
+    const backEl = flashcardEl.querySelector('.back');
+    
+    // Toggle front/back display
+    if (frontEl.style.display === 'none') {
+      frontEl.style.display = 'block';
+      backEl.style.display = 'none';
+    } else {
+      frontEl.style.display = 'none';
+      backEl.style.display = 'block';
+    }
+  };
+
+  // Delete functionality
   window.deleteFlashcard = function(index) {
     const confirmDelete = confirm('Are you sure you want to delete this flashcard?');
     if (confirmDelete) {
@@ -82,17 +124,16 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('flashcards', JSON.stringify(flashcards));
       renderFlashcards();
     }
-  }
+  };
 
-  // Edit functionality to navigate to add/edit page
+  // Edit functionality
   window.editFlashcard = function(index) {
-    // Store the index of the flashcard to edit
     localStorage.setItem('editFlashcardIndex', index);
     // Navigate to add/edit page
     window.location.href = 'addflashcards.html';
-  }
+  };
 
-  // Initial render of flashcards
+  // If we are on the flashcard-sets page, render them
   if (document.getElementById('flashcards')) {
     renderFlashcards();
   }

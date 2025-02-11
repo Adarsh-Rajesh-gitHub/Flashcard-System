@@ -1,37 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add/Edit Flashcards</title>
-    <link rel="stylesheet" href="style.css">
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Add/Edit Flashcards</title>
+   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Add/Edit Flashcards</h1>
-    </header>
-    <main>
-        <div class="content-container">
-            <form id="flashcard-form">
-                <label for="subject">Subject:</label>
-                <input type="text" id="subject" required>
-                <label for="topic">Topic:</label>
-                <input type="text" id="topic" required>
-                <label for="priority">Priority:</label>
-                <select id="priority">
-                    <option value="High">High</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Low">Low</option>
-                </select>
-                <div class="form-buttons">
-                    <button type="submit">Save Flashcard</button>
-                </div>
-            </form>
-            <div class="navigation">
-                <a href="flashcard-sets.html"><button>Back to Flashcard Sets</button></a>
-            </div>
-        </div>
-    </main>
-    <script src="script.js"></script>
+   <header>
+       <h1>Add/Edit Flashcards</h1>
+   </header>
+   <main>
+       <div class="content-container">
+           <form id="flashcard-form">
+               <label for="subject">Subject:</label>
+               <input type="text" id="subject" required>
+               
+               <label for="topic">Topic:</label>
+               <input type="text" id="topic" required>
+               
+               <label for="priority">Priority:</label>
+               <select id="priority">
+                   <option value="High">High</option>
+                   <option value="Medium">Medium</option>
+                   <option value="Low">Low</option>
+               </select>
+
+               <!-- New Front and Back fields -->
+               <label for="front">Front (Question/Prompt):</label>
+               <textarea id="front" rows="3" required></textarea>
+               
+               <label for="back">Back (Answer/Description):</label>
+               <textarea id="back" rows="3" required></textarea>
+               
+               <div class="form-buttons">
+                   <button type="submit">Save Flashcard</button>
+               </div>
+           </form>
+           <div class="navigation">
+               <a href="flashcard-sets.html"><button>Back to Flashcard Sets</button></a>
+           </div>
+       </div>
+   </main>
+   <script src="script.js"></script>
 </body>
 </html>
