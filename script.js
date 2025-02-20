@@ -42,14 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const editIndexInForm = localStorage.getItem('editFlashcardIndex');
       
       if (editIndexInForm !== null) {
-        // Update existing flashcard
         flashcards[editIndexInForm] = { subject, topic, priority, front, back };
         localStorage.removeItem('editFlashcardIndex');
       } else if (editIndex !== null) {
-        // We had an editIndex from earlier on load
         flashcards[editIndex] = { subject, topic, priority, front, back };
       } else {
-        // Add new flashcard
         flashcards.push({ subject, topic, priority, front, back });
       }
       
@@ -57,29 +54,42 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Flashcard saved successfully!');
       form.reset();
       
-      // Redirect to flashcard sets page
       window.location.href = 'flashcard-sets.html';
     });
   }
 
   // ----- SORTING HELPERS -----
-  // 1) Binary Search-based insertion for alphabetical sorting (by subject).
   function insertAlphabetically(sortedArray, flashcard) {
-    let left = 0;
-    let right = sortedArray.length - 1;
-    const currentSubject = flashcard.subject.toLowerCase(); 
-
+    let left = 0, right = sortedArray.length - 1;
+    const currentSubject = flashcard.subject.toLowerCase();
+    
     while (left <= right) {
       const mid = Math.floor((left + right) / 2);
       const midSubject = sortedArray[mid].subject.toLowerCase();
-
+      
       if (currentSubject < midSubject) {
         right = mid - 1;
       } else {
         left = mid + 1;
       }
     }
-    // 'left' is now the correct insertion index
+    sortedArray.splice(left, 0, flashcard);
+  }
+  
+  function insertReverseAlphabetically(sortedArray, flashcard) {
+    let left = 0, right = sortedArray.length - 1;
+    const currentSubject = flashcard.subject.toLowerCase();
+    
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+      const midSubject = sortedArray[mid].subject.toLowerCase();
+      
+      if (currentSubject > midSubject) {
+        right = mid - 1;
+      } else {
+        left = mid + 1;
+      }
+    }
     sortedArray.splice(left, 0, flashcard);
   }
 
@@ -90,104 +100,70 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return sorted;
   }
-
-  // 2) Sort by priority: High → Medium → Low
+  
+  function sortReverseAlphabetically(flashcards) {
+    const sorted = [];
+    for (let card of flashcards) {
+      insertReverseAlphabetically(sorted, card);
+    }
+    return sorted;
+  }
+  
   function sortByPriority(flashcards) {
     const priorityOrder = { High: 1, Medium: 2, Low: 3 };
-    // Simple comparison sort using built-in .sort()
-    return flashcards.sort((a, b) => {
-      return priorityOrder[a.priority] - priorityOrder[b.priority];
-    });
+    return flashcards.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
   }
-
-  // Called by the "Sort" button on flashcard-sets.html
-  window.applySort = function() {
+  
+  window.applySort = function () {
     const sortCriteria = document.getElementById('sortCriteria').value;
     const flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
-
+    
     if (sortCriteria === 'alphabetical') {
-      const sorted = sortAlphabetically(flashcards);
-      localStorage.setItem('flashcards', JSON.stringify(sorted));
+      localStorage.setItem('flashcards', JSON.stringify(sortAlphabetically(flashcards)));
+    } else if (sortCriteria === 'reverse-alphabetical') {
+      localStorage.setItem('flashcards', JSON.stringify(sortReverseAlphabetically(flashcards)));
     } else if (sortCriteria === 'priority') {
-      const sorted = sortByPriority(flashcards);
-      localStorage.setItem('flashcards', JSON.stringify(sorted));
+      localStorage.setItem('flashcards', JSON.stringify(sortByPriority(flashcards)));
     }
-
-    // Re-render after sorting
+    
     renderFlashcards();
   };
-
-  // ----- RENDER / FLIP / EDIT / DELETE -----
+  
   function renderFlashcards() {
     const flashcardsDiv = document.getElementById('flashcards');
     if (flashcardsDiv) {
       const flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
       
-      flashcardsDiv.innerHTML = flashcards
-        .map((flashcard, index) => {
-          return `
-            <div class="flashcard" id="flashcard-${index}">
-              <!-- Front / Back content toggles on Flip -->
-              <div class="flashcard-content front" style="display: block;">
-                <h3>${flashcard.front || 'No Front Text'}</h3>
-              </div>
-              <div class="flashcard-content back" style="display: none;">
-                <h3>${flashcard.back || 'No Back Text'}</h3>
-              </div>
-              
-              <!-- Additional info below -->
-              <p><strong>Subject:</strong> ${flashcard.subject}</p>
-              <p><strong>Topic:</strong> ${flashcard.topic}</p>
-              <p><strong>Priority:</strong> ${flashcard.priority}</p>
-              
-              <div class="flashcard-actions">
-                <button onclick="flipFlashcard(${index})">Flip</button>
-                <button onclick="editFlashcard(${index})">Edit</button>
-                <button onclick="deleteFlashcard(${index})">Delete</button>
-              </div>
-            </div>
-          `;
-        })
-        .join('');
+      flashcardsDiv.innerHTML = flashcards.map((flashcard, index) => `
+        <div class="flashcard" id="flashcard-${index}">
+          <div class="flashcard-content front" style="display: block;">
+            <h3>${flashcard.front || 'No Front Text'}</h3>
+          </div>
+          <div class="flashcard-content back" style="display: none;">
+            <h3>${flashcard.back || 'No Back Text'}</h3>
+          </div>
+          <p><strong>Subject:</strong> ${flashcard.subject}</p>
+          <p><strong>Topic:</strong> ${flashcard.topic}</p>
+          <p><strong>Priority:</strong> ${flashcard.priority}</p>
+          <div class="flashcard-actions">
+            <button onclick="flipFlashcard(${index})">Flip</button>
+            <button onclick="editFlashcard(${index})">Edit</button>
+            <button onclick="deleteFlashcard(${index})">Delete</button>
+          </div>
+        </div>
+      `).join('');
     }
   }
 
-  // Flip functionality
-  window.flipFlashcard = function(index) {
+  window.flipFlashcard = function (index) {
     const flashcardEl = document.getElementById(`flashcard-${index}`);
     if (!flashcardEl) return;
-    
     const frontEl = flashcardEl.querySelector('.front');
     const backEl = flashcardEl.querySelector('.back');
-    
-    // Toggle front/back display
-    if (frontEl.style.display === 'none') {
-      frontEl.style.display = 'block';
-      backEl.style.display = 'none';
-    } else {
-      frontEl.style.display = 'none';
-      backEl.style.display = 'block';
-    }
+    frontEl.style.display = frontEl.style.display === 'none' ? 'block' : 'none';
+    backEl.style.display = backEl.style.display === 'none' ? 'block' : 'none';
   };
 
-  // Delete functionality
-  window.deleteFlashcard = function(index) {
-    const confirmDelete = confirm('Are you sure you want to delete this flashcard?');
-    if (confirmDelete) {
-      const flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
-      flashcards.splice(index, 1);
-      localStorage.setItem('flashcards', JSON.stringify(flashcards));
-      renderFlashcards();
-    }
-  };
-
-  // Edit functionality
-  window.editFlashcard = function(index) {
-    localStorage.setItem('editFlashcardIndex', index);
-    window.location.href = 'addflashcards.html';
-  };
-
-  // If we are on the flashcard-sets page, render them
   if (document.getElementById('flashcards')) {
     renderFlashcards();
   }

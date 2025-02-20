@@ -19,13 +19,14 @@
 
            <!-- New sorting UI: dropdown + button -->
            <div class="sort-container">
-               <select id="sortCriteria">
-                   <option value="">Sort by...</option>
-                   <option value="alphabetical">Alphabetically (Subject)</option>
-                   <option value="priority">Priority</option>
-               </select>
-               <button onclick="applySort()">Sort</button>
-           </div>
+            <select id="sortCriteria">
+                <option value="">Sort by...</option>
+                <option value="alphabetical">Alphabetically (A → Z)</option>
+                <option value="reverse-alphabetical">Reverse Alphabetically (Z → A)</option>
+                <option value="priority">Priority</option>
+            </select>
+            <button onclick="applySort()">Sort</button>
+        </div>
 
            <div id="flashcards">
                <!-- Flashcards will be dynamically added here -->
