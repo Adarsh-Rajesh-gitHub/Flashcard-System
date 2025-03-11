@@ -163,6 +163,18 @@ document.addEventListener('DOMContentLoaded', () => {
     frontEl.style.display = frontEl.style.display === 'none' ? 'block' : 'none';
     backEl.style.display = backEl.style.display === 'none' ? 'block' : 'none';
   };
+  window.deleteFlashcard = function (index) {
+    let flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+
+    if (index >= 0 && index < flashcards.length) {
+        flashcards.splice(index, 1); // Remove the flashcard at the given index
+        localStorage.setItem('flashcards', JSON.stringify(flashcards));
+        renderFlashcards(); // Re-render the flashcards after deletion
+    } else {
+        console.error("Invalid index for deletion:", index);
+    }
+};
+
 
   if (document.getElementById('flashcards')) {
     renderFlashcards();
